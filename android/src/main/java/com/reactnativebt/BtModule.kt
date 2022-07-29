@@ -15,7 +15,7 @@ import com.facebook.react.bridge.Promise
 class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     private val activity: Activity? = currentActivity
-    private val bluetoothManager: BluetoothManager = currentActivity!!.getSystemService(BluetoothManager::class.java)
+    private val bluetoothManager: BluetoothManager = currentActivity.getSystemService(BluetoothManager::class.java)
     private val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.adapter
 
     override fun getName(): String {
