@@ -1,4 +1,4 @@
-package com.toughbuilt.bluetooth
+package com.reactnativebt
 
 import android.Manifest
 import android.app.Activity
