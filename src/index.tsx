@@ -1,4 +1,4 @@
 import { NativeModules } from 'react-native';
-const { Bt } = NativeModules;
+const { Bt: TBBluetooth } = NativeModules;
 
-export default Bt;
+export default TBBluetooth;
