@@ -15,8 +15,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Handler
 
-import androidx.annotation.Nullable
-
 import com.facebook.react.bridge.BaseActivityEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -114,7 +112,7 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     if (bluetoothAdapter != null) {
       if(bluetoothAdapter.isEnabled == true){
         connect(id)
-      } 
+      }
       else{
         promise.reject("Adapter Error", "Bluetooth Adapter is inactive")
       }
@@ -143,8 +141,10 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   /**
    * Send an event to JS
    */
-  private fun sendEvent(eventName: String, @Nullable params: WritableMap) {
-    context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java).emit(eventName, params)
+  private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
+    reactContext
+      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      .emit(eventName, params)
   }
 
   /**
