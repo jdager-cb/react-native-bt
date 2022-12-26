@@ -1,6 +1,6 @@
 {
   "name": "react-native-bt-jmdm",
-  "version": "0.0.2",
+  "version": "2.0.0",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
