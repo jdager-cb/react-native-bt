@@ -281,13 +281,20 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     mPromise?.resolve(servicesMap)
   }
 
-  /**
-   * Send an event to JS
-   */
-  private fun sendEvent(reactContext: ReactContext, eventName: String, params: WritableMap?) {
+  private fun sendEvent(eventName: String, params: WritableMap?) {
     reactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, params)
+  }
+
+  @ReactMethod
+  fun addListener(eventName: String) {
+      // Set up any upstream listeners or background tasks as necessary
+  }
+
+  @ReactMethod
+  fun removeListeners(count: Int) {
+      // Remove upstream listeners, stop unnecessary background tasks
   }
 
   /**
@@ -369,7 +376,7 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     override fun onCharacteristicChanged( gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
       val params: WritableMap = Arguments.createMap();
       params.putString("status", "reading")
-      sendEvent(reactContext, "reading", params)
+      sendEvent("reading", params)
     }
   }
 
