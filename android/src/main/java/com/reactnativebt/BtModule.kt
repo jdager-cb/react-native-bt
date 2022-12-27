@@ -182,6 +182,32 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     }
   }
 
+  /**
+   * Connect to the Device by MAC Address
+   */
+  @ReactMethod
+  fun notifyCharacteristicBT(service: String, characteristic: String, promise: Promise) {
+    mPromise = promise;
+    if (bluetoothAdapter != null) {
+      if(bluetoothAdapter.isEnabled == true){
+        if(connectedDevice != null){
+          val bleService : BluetoothGattService? = bluetoothGatt?.getService(UUID.fromString(service))
+          val bleCharacteristic : BluetoothGattCharacteristic? = bleService?.getCharacteristic(UUID.fromString(characteristic))
+          bluetoothGatt?.setCharacteristicNotification(bleCharacteristic, true)
+        }
+        else{
+          promise.reject("Connection Error", "No device connected")
+        }
+      }
+      else{
+        promise.reject("Adapter Error", "Bluetooth Adapter is inactive")
+      }
+    }
+    else{
+      promise.reject("Adapter Error", "Bluetooth Adapter not found")
+    }
+  }
+
   // INNER METHODS
 
   /**
@@ -284,30 +310,6 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     }
   }
 
-  private inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
-
-    private val mmInStream: InputStream = mmSocket.inputStream
-    private val mmOutStream: OutputStream = mmSocket.outputStream
-    private val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
-
-    override fun run() {
-      var numBytes: Int // bytes returned from read()
-
-      // Keep listening to the InputStream until an exception occurs.
-      while (true) {
-        // Read from the InputStream.
-        numBytes = try {
-          mmInStream.read(mmBuffer)
-        } catch (e: IOException) {
-          break
-        }
-
-        // Send the obtained bytes to the UI activity.
-        mPromise?.resolve(numBytes)
-      }
-    }
-  }
-
   // EVENT LISTENERS
   /**
    * Handle Bluetooth Status
@@ -362,6 +364,12 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       if (status == BluetoothGatt.GATT_SUCCESS) {
         mapCharacteristic(characteristic)
       }
+    }
+
+    override fun onCharacteristicChanged( gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
+      val params: WritableMap = Arguments.createMap();
+      params.putString("status", "reading")
+      sendEvent(reactContext, "reading", params)
     }
   }
 
