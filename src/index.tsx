@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
-const TBBluetooth = new NativeEventEmitter(NativeModules.Bt);
+import { NativeModules } from 'react-native';
+const { Bt: TBBluetooth } = NativeModules;
 
 export default TBBluetooth;

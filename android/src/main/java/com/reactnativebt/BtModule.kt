@@ -42,6 +42,14 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   // REACT METHODS
 
+  @ReactMethod
+  fun addListener(type: String?) {
+  }
+
+  @ReactMethod
+  fun removeListeners(type: Int?) {
+  }
+
   /**
    * Check if Bluetooth is enabled
    */
@@ -282,19 +290,9 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   }
 
   private fun sendEvent(eventName: String, params: WritableMap?) {
-    reactContext
+    context
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, params)
-  }
-
-  @ReactMethod
-  fun addListener(eventName: String) {
-      // Set up any upstream listeners or background tasks as necessary
-  }
-
-  @ReactMethod
-  fun removeListeners(count: Int) {
-      // Remove upstream listeners, stop unnecessary background tasks
   }
 
   /**
