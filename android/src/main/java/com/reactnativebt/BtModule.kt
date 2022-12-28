@@ -202,6 +202,7 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
           val bleService : BluetoothGattService? = bluetoothGatt?.getService(UUID.fromString(service))
           val bleCharacteristic : BluetoothGattCharacteristic? = bleService?.getCharacteristic(UUID.fromString(characteristic))
           bluetoothGatt?.setCharacteristicNotification(bleCharacteristic, true)
+          mPromise?.resolve("Listening " + characteristic)
         }
         else{
           promise.reject("Connection Error", "No device connected")
@@ -373,8 +374,14 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
     override fun onCharacteristicChanged( gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
       val params: WritableMap = Arguments.createMap();
-      params.putString("status", "reading")
-      sendEvent("reading", params)
+      val data: ByteArray? = characteristic.value
+      if (data?.isNotEmpty() == true) {
+          val hexString: String = data.joinToString(separator = " ") {
+              String.format("%02X", it)
+          }
+          params.putString("data", hexString)
+          sendEvent("reading", params)
+      }
     }
   }
 
