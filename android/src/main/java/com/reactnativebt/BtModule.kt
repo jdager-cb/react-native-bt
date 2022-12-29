@@ -101,15 +101,23 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
             this
           )
         }
-        try{
-          Handler().postDelayed(Runnable {
-            bluetoothLEScanner?.stopScan(leScanCallback)
-            promise.resolve(leDevices)
-          }, 10000)
-          bluetoothLEScanner?.startScan(leScanCallback)
+        if(!scanning){
+          try{
+            Handler().postDelayed(Runnable {
+              scanning = false
+              bluetoothLEScanner?.stopScan(leScanCallback)
+              promise.resolve(leDevices)
+            }, 10000)
+            scanning = true
+            bluetoothLEScanner?.startScan(leScanCallback)
+          }
+          catch(e: Exception){
+            promise.reject("Discovery Error", e.message)
+          }
         }
-        catch(e: Exception){
-          promise.reject("Discovery Error", e.message)
+        else {
+          scanning = false
+          bluetoothLEScanner?.stopScan(leScanCallback)
         }
       }
       else{
@@ -304,7 +312,6 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       try {
         connectedDevice = adapter.getRemoteDevice(address)
         bluetoothGatt = connectedDevice?.connectGatt(context, false, bluetoothGattCallback)
-        mPromise?.resolve("Connect")
         //return true
       } catch (exception: IllegalArgumentException) {
         mPromise?.reject("Connection Error", exception.message)
@@ -352,9 +359,9 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   private val bluetoothGattCallback = object : BluetoothGattCallback() {
     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
       if (newState == BluetoothProfile.STATE_CONNECTED) {
-        //leDevices = Arguments.createArray()
-        //bluetoothGatt?.discoverServices()
+        mPromise?.resolve(true);
       } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+        mPromise?.resolve(false);
       }
     }
 
@@ -409,6 +416,7 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   private var mPromise: Promise? = null
   private var bluetoothGatt: BluetoothGatt? = null
   private var leDevices: WritableArray = Arguments.createArray()
+  private var scanning = false
 
   init {
     context = reactContext
