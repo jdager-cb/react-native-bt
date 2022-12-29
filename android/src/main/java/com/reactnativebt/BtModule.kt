@@ -148,6 +148,15 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     }
   }
 
+  @ReactMethod
+  fun disconnectBT() {
+    bluetoothGatt?.let { gatt ->
+        gatt.close()
+        bluetoothGatt = null
+        mPromise = null
+    }
+  }
+
   /**
    * Connect to the Device by MAC Address
    */
