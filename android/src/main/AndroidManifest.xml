@@ -7,7 +7,7 @@
     <uses-permission 
         android:name="android.permission.BLUETOOTH_SCAN"
         android:userPermissonFlags="neverForLocation"
-        tool:targetApi="s"
+        tools:targetApi="s"
     />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
