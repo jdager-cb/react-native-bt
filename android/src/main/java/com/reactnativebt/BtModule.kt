@@ -150,11 +150,7 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
 
   @ReactMethod
   fun disconnectBT() {
-    bluetoothGatt?.let { gatt ->
-        gatt.close()
-        bluetoothGatt = null
-        mPromise = null
-    }
+    close();
   }
 
   /**
@@ -332,6 +328,17 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
     }
   }
 
+  /**
+   * Disconnect BT
+   */
+  fun close(){
+    bluetoothGatt?.let { gatt ->
+        gatt.close()
+        bluetoothGatt = null
+        mPromise = null
+    }
+  }
+
   // EVENT LISTENERS
   /**
    * Handle Bluetooth Status
@@ -370,7 +377,10 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
       if (newState == BluetoothProfile.STATE_CONNECTED) {
         mPromise?.resolve(true);
       } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-        mPromise?.resolve(false);
+        close()
+        val params: WritableMap = Arguments.createMap();
+        params.putBoolean("connected", false);
+        sendEvent("status", params)
       }
     }
 
