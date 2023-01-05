@@ -87,6 +87,7 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
   @ReactMethod
   fun discoverBT(promise: Promise){
     mPromise = promise
+    leDevices = Arguments.createArray()
     if (bluetoothAdapter != null) {
       if(bluetoothAdapter.isEnabled){
         val activity: PermissionAwareActivity = currentActivity as PermissionAwareActivity
@@ -251,18 +252,20 @@ class BtModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModu
    */
   private fun mapDevice(device: BluetoothDevice?, record: ScanRecord?): WritableMap {
     val params: WritableMap = Arguments.createMap()
-    val dataString: String? = Base64.getEncoder().encodeToString(record?.bytes)
-    val dataHex: String? = bytesToHex(record?.bytes)
+    val dataHex: String? = record?.bytes?.joinToString(separator = " ") {
+        String.format("%02X", it)
+    }
     if (device != null) {
       params.putString("deviceName", device?.name)
       params.putString("deviceAddress", device?.address)
-      if(dataString != null && dataHex != null){
-        params.putString("deviceData", dataString)
-        params.putString("deviceDataHex", dataHex)
-        params.putString("deviceBytes", record?.manufacturerSpecificData.toString())
+      if(dataHex != null){
+        params.putString("deviceAdvData", dataHex)
+        params.putString("deviceManData", record?.manufacturerSpecificData.toString())
       }
       if (device?.bluetoothClass != null) {
-        params.putString("deviceBytes", record?.manufacturerSpecificData.toString())
+        params.putString("deviceAdvData", record?.bytes?.joinToString(separator = " ") {
+          String.format("%02X", it)
+        })
       }
     }
     return params
